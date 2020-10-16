@@ -90,8 +90,8 @@ Aruco::Aruco(const rclcpp::NodeOptions & options)
 
 void Aruco::drawText(Mat frame, string text, Point point)
 {
-  putText(frame, text, point, FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 0), 2, CV_AA);
-  putText(frame, text, point, FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 255), 1, CV_AA);
+  putText(frame, text, point, FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 0), 2, cv::LINE_AA);
+  putText(frame, text, point, FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 255), 1, cv::LINE_AA);
 }
 
 /**
