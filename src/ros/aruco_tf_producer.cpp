@@ -42,6 +42,9 @@ bool ArucoTFProducer::arucoSolverStatusCallback(
   aruco_raw.transform.rotation.y = msg->pose.orientation.y;
   aruco_raw.transform.rotation.z = msg->pose.orientation.z;
   aruco_raw.transform.rotation.w = msg->pose.orientation.w;
+  aruco_raw.header.frame_id = "lucid_camera_link_optical";
+  aruco_raw.child_frame_id = "aruco_observed_smm";
+
 
   Eigen::Affine3d aruco_eigen = tf2::transformToEigen(aruco_raw);
   aruco_eigen = aruco_eigen.inverse(Eigen::Affine);
@@ -49,10 +52,10 @@ bool ArucoTFProducer::arucoSolverStatusCallback(
   aruco_observed.header.frame_id = "ar3p_camera_link_optical";
 
   // PnP Solution in World Frame
-  tf_buffer_->transform(aruco_observed, aruco_observed, "world", tf2::durationFromSec(1.5));
+  tf_buffer_->transform(aruco_observed, aruco_observed, "lucid_camera_link_optical", tf2::durationFromSec(1.5));
 
   // Aruco Observed Frame
-  aruco_observed.header.frame_id = "world";
+  aruco_observed.header.frame_id = "lucid_camera_link_optical";
   aruco_observed.child_frame_id = "aruco_observed_smm";
   aruco_observed.header.stamp = this->now();
   tf_broadcaster_->sendTransform(aruco_observed);
