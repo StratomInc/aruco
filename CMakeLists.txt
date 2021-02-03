@@ -22,6 +22,7 @@ add_compile_options(-std=c++11)
 #Packages
 find_package(ament_cmake REQUIRED)
 find_package(cv_bridge REQUIRED)
+find_package(Eigen3 REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(std_msgs REQUIRED)
@@ -29,11 +30,16 @@ find_package(sensor_msgs REQUIRED)
 find_package(image_transport REQUIRED)
 find_package(rosidl_cmake REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_eigen REQUIRED)
+find_package(tf2_ros REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(OpenCV REQUIRED)
+find_package(orocos_kdl REQUIRED)
 
 include_directories(
   include
+  ${EIGEN3_INCLUDE_DIRS}
 )
 
 set(msg_files
@@ -50,7 +56,8 @@ set(node_plugins "")
 
 add_library(aruco_detector
   src/ros/Aruco.cpp
-  src/ros/ArucoNode.cpp)
+  src/ros/aruco_composition.cpp
+  src/ros/aruco_tf_producer.cpp)
 ament_target_dependencies(aruco_detector cv_bridge image_transport OpenCV rclcpp rclcpp_components std_msgs)
 
 add_library(aruco_component SHARED
@@ -67,15 +74,30 @@ ament_target_dependencies(aruco_component
 rclcpp_components_register_nodes(aruco_component "aruco::Aruco")
 set(node_plugins "${node_plugin}aruco::Aruco;$<TARGET_FILE:Aruco>\n")
 
+add_library(aruco_tf_producer_component SHARED
+  src/ros/aruco_tf_producer.cpp)
+target_compile_definitions(aruco_tf_producer_component
+  PRIVATE "COMPOSITION_BUILDING_DLL")
+ament_target_dependencies(aruco_tf_producer_component
+  orocos_kdl
+  rclcpp
+  tf2
+  tf2_eigen
+  tf2_msgs
+  tf2_ros)
+rclcpp_components_register_nodes(aruco_tf_producer_component "aruco::ArucoTFProducer")
+set(node_plugins "${node_plugins}aruco::ArucoTFProducer;$<TARGET_FILE:aruco_tf_producer>\n")
+
 add_executable(aruco_composition
-  src/ros/ArucoNode.cpp)
+  src/ros/aruco_composition.cpp)
 target_link_libraries(aruco_composition
   aruco_component
-  aruco_detector)
+  aruco_tf_producer_component)
 ament_target_dependencies(aruco_composition rclcpp)
 
 install(TARGETS
   aruco_component
+  aruco_tf_producer_component
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)

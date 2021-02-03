@@ -9,7 +9,7 @@ namespace aruco
 {
 //Default Component
 Aruco::Aruco(const rclcpp::NodeOptions & options)
-: Node("aruco_node", options)
+: Node("aruco", options)
 {
   data_calibration[0] = 570.3422241210938;
   data_calibration[1] = 0.;
@@ -409,25 +409,22 @@ void Aruco::stringToDoubleArray(string data, double * values, unsigned int count
 void Aruco::setLocalVariables()
 {
   //Parameters
-  this->get_parameter_or<bool>("debug", debug, true);
-  this->get_parameter_or<bool>("use_opencv_coords", use_opencv_coords, true);
-  this->get_parameter_or<float>("cosine_limit", cosine_limit, 0.7);
-  this->get_parameter_or<int>("theshold_block_size_min", theshold_block_size_min, 3);
-  this->get_parameter_or<int>("theshold_block_size_max", theshold_block_size_max, 21);
-  this->get_parameter_or<float>("max_error_quad", max_error_quad, 0.035);
-  this->get_parameter_or<int>("min_area", min_area, 100);
-  this->get_parameter_or<bool>("calibrated", calibrated, false);
-  this->get_parameter_or<std::string>("calibration", calib_data, "");
-  this->get_parameter_or<std::string>("distortion", distort_data, "");
-  this->get_parameter_or<std::string>("topic_camera", topic_camera, "image_rect");
-  this->get_parameter_or<std::string>(
-    "topic_camera_info", topic_camera_info,
-    "camera_info");
-  this->get_parameter_or<std::string>(
-    "topic_marker_register", topic_marker_register,
-    "marker_register");
-  this->get_parameter_or<std::string>("topic_pose", topic_pose, "aruco_pose_solution");
-
+  debug = this->declare_parameter<bool>("debug", false);
+  use_opencv_coords = this->declare_parameter<bool>("use_opencv_coords", true);
+  cosine_limit = this->declare_parameter<float>("cosine_limit", 0.7);
+  theshold_block_size_min = this->declare_parameter<int>("theshold_block_size_min", 3);
+  theshold_block_size_max = this->declare_parameter<int>("theshold_block_size_max", 21);
+  max_error_quad = this->declare_parameter<float>("max_error_quad", 0.035);
+  min_area = this->declare_parameter<int>("min_area", 100);
+  calibrated = this->declare_parameter<bool>("calibrated", false);
+  calib_data = this->declare_parameter<std::string>("calibration", "");
+  distort_data = this->declare_parameter<std::string>("distortion", "");
+  topic_camera = this->declare_parameter<std::string>("topic_camera", "image_rect");
+  topic_camera_info = this->declare_parameter<std::string>(
+    "topic_camera_info", "camera_info");
+  topic_marker_register = this->declare_parameter<std::string>(
+    "topic_marker_register", "marker_register");
+  topic_pose = this->declare_parameter<std::string>("topic_pose", "aruco_pose_solution");
 }
 
 } // namespace aruco
