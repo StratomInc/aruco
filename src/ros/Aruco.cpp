@@ -71,10 +71,10 @@ Aruco::Aruco(const rclcpp::NodeOptions & options)
     topic_pose,
     rclcpp::SensorDataQoS());
   debug_pub = this->create_publisher<sensor_msgs::msg::Image>(
-    "/maruco/aruco_debug_image",
+    "aruco_debug_image",
     rclcpp::QoS(10));
   aruco_pub = this->create_publisher<aruco::msg::Marker>(
-    "/maruco/marker_register",
+    "marker_register",
     rclcpp::SensorDataQoS());
   sub_image = this->create_subscription<sensor_msgs::msg::Image>(
     topic_camera, rclcpp::SensorDataQoS(),
@@ -109,7 +109,7 @@ void Aruco::onFrame(const sensor_msgs::msg::Image::SharedPtr msg)
       temp_marker.posz = 0;
       temp_marker.rotx = 0;
       temp_marker.roty = 0;
-      temp_marker.rotz = 0;
+      temp_marker.rotz = 1.57079632679;
       temp_marker.size = .038125;
       temp_marker.id = 401;
       aruco_pub->publish(temp_marker);
@@ -409,7 +409,7 @@ void Aruco::stringToDoubleArray(string data, double * values, unsigned int count
 void Aruco::setLocalVariables()
 {
   //Parameters
-  this->get_parameter_or<bool>("debug", debug, false);
+  this->get_parameter_or<bool>("debug", debug, true);
   this->get_parameter_or<bool>("use_opencv_coords", use_opencv_coords, true);
   this->get_parameter_or<float>("cosine_limit", cosine_limit, 0.7);
   this->get_parameter_or<int>("theshold_block_size_min", theshold_block_size_min, 3);
@@ -419,14 +419,14 @@ void Aruco::setLocalVariables()
   this->get_parameter_or<bool>("calibrated", calibrated, false);
   this->get_parameter_or<std::string>("calibration", calib_data, "");
   this->get_parameter_or<std::string>("distortion", distort_data, "");
-  this->get_parameter_or<std::string>("topic_camera", topic_camera, "/camera1/image_raw");
+  this->get_parameter_or<std::string>("topic_camera", topic_camera, "image_rect");
   this->get_parameter_or<std::string>(
     "topic_camera_info", topic_camera_info,
-    "/camera1/camera_info");
+    "camera_info");
   this->get_parameter_or<std::string>(
     "topic_marker_register", topic_marker_register,
-    "/maruco/marker_register");
-  this->get_parameter_or<std::string>("topic_pose", topic_pose, "/maruco/aruco_pose_solution");
+    "marker_register");
+  this->get_parameter_or<std::string>("topic_pose", topic_pose, "aruco_pose_solution");
 
 }
 
